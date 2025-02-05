@@ -19,8 +19,9 @@ def login(username, password):
             tenant='University of Nevada, Las Vegas'
         )
         return client
-    except:
-        raise Exception("Invalid Login")
+    except Exception as e:
+        print(e)
+        raise Exception("Invalid Login")  
 
 
 # gets course selected by user
@@ -121,8 +122,9 @@ def createReport(client, stats):
     parentDirectory = os.getcwd()
     for i in range(len(stats[0])):
         print("Running Section 1{0} Record...".format(str(i+1).zfill(3)))
-        directory = str("1{0}_ABET Assignment Record {1}".format(
-            str(i+1).zfill(3), datetime.datetime.now()))
+        directory = str(i+1) + "_" + datetime.datetime.now().strftime("%m_%d_%Y")
+        #directory = str("1{0}_ABET Assignment Record {1}".format(
+            #str(i+1).zfill(3), datetime.datetime.now()))
         coursePath = os.path.join(parentDirectory, directory)
         os.mkdir(coursePath)
         # run report for each assignment
@@ -141,6 +143,10 @@ def createReport(client, stats):
 
 if __name__ == "__main__":
     # login>get course>get assigments>get min/mid/max>create pdfs
-    client = login(os.getenv("USERNAME"), os.getenv("PASSWORD"))
+    f = open(".env")
+    line = f.read().split(' ')
+    f.close()
+    #client = login(os.getenv("USERNAME"), os.getenv("PASSWORD"))
+    client = login(line[0], line[1])
     createReport(client, getMinMedMaxAssignments(
         getCourseAssignmentGrades(client, getCourse(client))))
